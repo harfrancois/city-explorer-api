@@ -11,7 +11,7 @@ const express = require('express');
 //To set up cors.
 const cors = require('cors');
 //Adding the data
-
+const weather = require('./modules/weather.js');
 //To use express.
 const app = express();
 
@@ -19,8 +19,8 @@ const app = express();
 const PORT = process.env.PORT || 3003;
 //To use cors.
 app.use(cors());
-const handleWeatherData = require('./weather');
-const handleMovieData = require('./movies');
+const handleWeatherData = require('./modules/weather');
+const handleMovieData = require('./modules/movies');
 //Testing server functionality
 console.log('Hello World!');
 //testing PORT functionality.
@@ -28,6 +28,17 @@ console.log('Hello World!');
 app.get('/weather', handleWeatherData);
 app.get('/movies', handleMovieData);
 
+app.get('/weather', weatherHandler);
+
+function weatherHandler(request, response) {
+  const { lat, lon } = request.query;
+  weather(lat, lon)
+    .then(summaries => response.send(summaries))
+    .catch((error) => {
+      console.error(error);
+      response.status(200).send('Sorry. Something went wrong!')
+    });
+}
 
 
 
